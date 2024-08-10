@@ -5,6 +5,8 @@ class Game
     @words = words
     @lives = 5
     @guessed_letters = []
+    @word = ''
+    @char_array = []
   end
 
   def filter_words
@@ -16,13 +18,14 @@ class Game
   end
 
   def generate_word
-    filter_words[rand(@words.length)]
+    @word = filter_words[rand(@words.length)]
+    @char_array = @word.chars
+    @char_array.pop
+    @word
   end
 
-  def display_word(word)
-    puts word
-    char_array = word.chars
-    char_array.each do |char|
+  def display_word
+    @char_array.each do |char|
       if @guessed_letters.include?(char)
         print " #{char} "
       else
@@ -32,22 +35,43 @@ class Game
     puts
   end
 
+  def check_win
+    won = true
+    @char_array.each do |char|
+      won = false unless @guessed_letters.include?(char)
+    end
+    won
+  end
+
+  def enter_letter
+    puts 'Please enter a letter'
+    letter = gets.chomp.downcase
+    while @guessed_letters.include?(letter)
+      puts "Please enter another letter. You already guessed #{letter}"
+      letter = gets.chomp.downcase
+    end
+    if @word.include?(letter)
+      puts "The word includes the letter #{letter}"
+    else
+      @lives -= 1
+      puts "The word does not include the letter #{letter}"
+    end
+    @guessed_letters << letter
+  end
+
   def play_round
-    word = generate_word
-    display_word(word)
-    while @lives > 0 do 
+    generate_word
+    display_word
+    while @lives > 0
       puts "Remaining lives #{@lives}"
       puts "Guessed letters #{@guessed_letters}"
-      puts "Please enter a letter"
-      letter = gets.chomp
-      if word.include?(letter)
-        puts "The word includes the letter #{letter}"
-      else
-        @lives = @lives - 1
-        puts "The word does not include the letter #{letter}"
+      enter_letter
+      display_word
+      if check_win
+        puts 'You win'
+        break
       end
-      @guessed_letters << letter
-      display_word(word)
     end
+    puts 'End of play round'
   end
 end
