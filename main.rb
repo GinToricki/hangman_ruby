@@ -6,4 +6,4 @@ end
 
 
 game = Game.new('Tin', load_file)
-game.generate_word
+game.play_round
