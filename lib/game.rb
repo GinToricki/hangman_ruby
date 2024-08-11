@@ -1,12 +1,31 @@
 # The class game will allow you to play hangman
 class Game
-  def initialize(player_name, words)
+  attr_accessor :player_name, :lives, :guessed_letters, :word, :char_array, :words
+  def initialize(player_name)
     @player_name = player_name
-    @words = words
+    @words = []
     @lives = 5
     @guessed_letters = []
     @word = ''
     @char_array = []
+  end
+
+  def load_values(words, lives, guessed_letters, word, char_array)
+    @words = words
+    @lives = lives
+    @guessed_letters = guessed_letters
+    @word = word
+    @char_array = char_array
+  end
+
+  def to_hash
+    {
+      player_name: @player_name,
+      lives: @lives,
+      guessed_letters: @guessed_letters,
+      word: @word,
+      char_array: @char_array
+    }
   end
 
   def filter_words
@@ -18,9 +37,8 @@ class Game
   end
 
   def generate_word
-    @word = filter_words[rand(@words.length)]
+    @word = filter_words[rand(@words.length)].chomp
     @char_array = @word.chars
-    @char_array.pop
     @word
   end
 
@@ -59,12 +77,19 @@ class Game
     @guessed_letters << letter
   end
 
+  def save_round
+    puts "1. To save\n2. Continue round"
+    gets.chomp
+  end
+
   def play_round
-    generate_word
     display_word
     while @lives > 0
       puts "Remaining lives #{@lives}"
       puts "Guessed letters #{@guessed_letters}"
+      if save_round == "1"
+        return 1
+      end
       enter_letter
       display_word
       if check_win
